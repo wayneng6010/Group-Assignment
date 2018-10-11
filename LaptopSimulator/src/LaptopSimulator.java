@@ -2,6 +2,11 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
+//to get currenttime
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;  
+
 public class LaptopSimulator extends JFrame implements ActionListener{
     //laptop startup animation 
     Icon startupGif = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/startup.gif");
@@ -10,6 +15,14 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     //laptop shutdown animation
     Icon shutdownGif = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/shutdown.gif");
     JLabel shutdownAnimation = new JLabel();
+    
+    //wallpaper
+    ImageIcon wallpaperJpg = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/wallpaper.jpg");
+    JLabel wallpaperLbl = new JLabel();
+    
+    //time and greeting above wallpaper background
+    JLabel timeLbl = new JLabel();
+    JLabel greetingLbl = new JLabel();
     
     //notepad background and text
     Icon notepadBG = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/notepadbg.jpg");
@@ -53,15 +66,18 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     
     //power on or off (false = off)
     boolean power = false;
+    String usernameLbl = "YourName";
     
     //home button
     Icon homeIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/home.png");
     JButton homeBtn = new JButton(homeIcon);
+    
+    //Panel for screen
+    JPanel screen;
 
     public static void main(String[] args) {
         LaptopSimulator home = new LaptopSimulator();
     }
-    JPanel screen;
     public LaptopSimulator(){
         //Screen
         screen = new JPanel();
@@ -71,6 +87,8 @@ public class LaptopSimulator extends JFrame implements ActionListener{
         // add startup animation and shutdown animation
         screen.add(startupAnimation);
         screen.add(shutdownAnimation);
+        //add wallpaper
+        screen.add(wallpaperLbl);
         
         //Menu Bar
         JPanel menu = new JPanel();
@@ -180,7 +198,88 @@ public class LaptopSimulator extends JFrame implements ActionListener{
         
     }
     
+    public void wallpaper(){
+        //declare JLayeredPane to perform multi layer components
+        JLayeredPane wallpaperPnl = new JLayeredPane();
+        //layer one
+        JPanel layerOne = new JPanel();
+        //set bakcbround of JPanel to transparent
+        layerOne.setOpaque(false);
+        // convert imageicon to image
+        Image oriImage = wallpaperJpg.getImage(); 
+        // scale image to preffered size
+        Image scaledImg = oriImage.getScaledInstance(1400, 860, Image.SCALE_SMOOTH); 
+        //convert back to imageicon 
+        wallpaperJpg = new ImageIcon(scaledImg);
+        //display imageicon
+        wallpaperLbl.setVisible(true);
+        wallpaperLbl.setIcon(wallpaperJpg);
+         //set boundaries(x offset, y offset, width, height)
+        layerOne.setBounds(0, 0, 1400, 1000);
+        //add component to layerOne JPanel 
+        layerOne.add(wallpaperLbl);
+
+        //layer two
+        JPanel layerTwo = new JPanel();
+        //set bakcbround of JPanel to transparent
+        layerTwo.setOpaque(false);
+        //time and greeting 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");  
+        Date date = new Date();  
+        //set width and height of timeLbl
+        timeLbl.setPreferredSize(new Dimension(1400, 100));
+        //horizontal and vertical alignment 
+        timeLbl.setHorizontalAlignment(SwingConstants.CENTER);
+        timeLbl.setVerticalAlignment(SwingConstants.CENTER);
+        //set font and color
+        timeLbl.setFont(new Font("Calibri", Font.BOLD, 120));
+        timeLbl.setForeground(Color.white);
+        //set time on timeLbl
+        timeLbl.setText(dateFormat.format(date));
+        //get hour of day from calendar
+        Calendar calendar = Calendar.getInstance();
+        int currentHrTime = calendar.get(Calendar.HOUR_OF_DAY);
+        //to determine whether current time is morning, afternoon or evening
+        String greetStr = "";
+        if(currentHrTime >= 0 && currentHrTime < 12){
+            greetStr = "Good Morning";     
+        }else if(currentHrTime >= 12 && currentHrTime < 16){
+            greetStr = "Good Afternoon";
+        }else if(currentHrTime >= 16 && currentHrTime < 24){
+            greetStr = "Good Evening";
+        }
+        //set font and color
+        greetingLbl.setFont(new Font("Calibri", Font.BOLD, 60));
+        greetingLbl.setForeground(Color.white);
+        greetingLbl.setText(greetStr + ", " + usernameLbl + ".");
+        //set width and height of timeLbl
+        greetingLbl.setPreferredSize(new Dimension(1400, 100));
+        //horizontal and vertical alignment 
+        greetingLbl.setHorizontalAlignment(SwingConstants.CENTER);
+        greetingLbl.setVerticalAlignment(SwingConstants.CENTER);
+         //set boundaries(x offset, y offset, width, height)
+        layerTwo.setBounds(0, 0, 1400, 800);
+        layerTwo.add(Box.createRigidArea(new Dimension(0, 100)));//add spaces
+        //empty panel (add space)
+        JPanel panelSpace = new JPanel();
+        panelSpace.setOpaque(false);//transparent background
+        panelSpace.add(Box.createRigidArea(new Dimension(0, 320)));//add spaces
+        //add component to layer two
+        layerTwo.add(panelSpace);
+        layerTwo.add(timeLbl);
+        layerTwo.add(greetingLbl);
+        
+        //add JPanel layerOne to 1st layer, JPanel layerTwo ro 2nd layer
+        wallpaperPnl.add(layerOne, new Integer(0),0);
+        wallpaperPnl.add(layerTwo, new Integer(1),0);
+        
+        wallpaperPnl.setVisible(true);
+        screen.setLayout(new BorderLayout());
+        screen.add(wallpaperPnl, BorderLayout.CENTER);
+    }
+    
     public void notepad(){
+        //declare JLayeredPane to perform multi layer components
         JLayeredPane notepadPnl = new JLayeredPane();
          //add notepad background
         //set up layered jpanel
@@ -209,6 +308,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
         notepadTxt.setFont(new Font("Calibri", Font.BOLD, 60));
         //set color of text
         notepadTxt.setForeground(Color.GRAY);
+        //set boundaries(x offset, y offset, width, height)
         layerTwo.setBounds(220, 110, 1100, 600);
         layerTwo.add(notepadTxt);
         
@@ -272,14 +372,14 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 settingBtn.setEnabled(false);
                 
                 //timer which function will executed after 7 secs
-                Timer t2 = new javax.swing.Timer(7000, new ActionListener(){
+                Timer t2 = new javax.swing.Timer(1000, new ActionListener(){
                 @Override
                     public void actionPerformed(ActionEvent e){
                         
                         //remove startup animation
                         startupAnimation.setVisible(false);
                         startupAnimation.setIcon(null);
-                        
+                        wallpaper();
                         //enable every buttons once laptop is switched on
                         powerBtn.setEnabled(true);
                         homeBtn.setEnabled(true);
