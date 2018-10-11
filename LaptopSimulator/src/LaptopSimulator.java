@@ -74,7 +74,10 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     
     //Panel for screen
     JPanel screen;
-
+    
+    //panel for wallpaper
+    JLayeredPane wallpaperPnl;
+            
     public static void main(String[] args) {
         LaptopSimulator home = new LaptopSimulator();
     }
@@ -200,7 +203,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     
     public void wallpaper(){
         //declare JLayeredPane to perform multi layer components
-        JLayeredPane wallpaperPnl = new JLayeredPane();
+        wallpaperPnl = new JLayeredPane();
         //layer one
         JPanel layerOne = new JPanel();
         //set bakcbround of JPanel to transparent
@@ -218,40 +221,50 @@ public class LaptopSimulator extends JFrame implements ActionListener{
         layerOne.setBounds(0, 0, 1400, 1000);
         //add component to layerOne JPanel 
         layerOne.add(wallpaperLbl);
-
+        
         //layer two
         JPanel layerTwo = new JPanel();
         //set bakcbround of JPanel to transparent
         layerTwo.setOpaque(false);
         //time and greeting 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");  
-        Date date = new Date();  
+        
         //set width and height of timeLbl
         timeLbl.setPreferredSize(new Dimension(1400, 100));
         //horizontal and vertical alignment 
         timeLbl.setHorizontalAlignment(SwingConstants.CENTER);
         timeLbl.setVerticalAlignment(SwingConstants.CENTER);
         //set font and color
-        timeLbl.setFont(new Font("Calibri", Font.BOLD, 120));
+        timeLbl.setFont(new Font("Segoe UI", Font.BOLD, 120));
         timeLbl.setForeground(Color.white);
-        //set time on timeLbl
-        timeLbl.setText(dateFormat.format(date));
-        //get hour of day from calendar
-        Calendar calendar = Calendar.getInstance();
-        int currentHrTime = calendar.get(Calendar.HOUR_OF_DAY);
-        //to determine whether current time is morning, afternoon or evening
+        //timer which function will executed after 500 millisecs
+        Timer t1 = new javax.swing.Timer(500, new ActionListener(){
         String greetStr = "";
-        if(currentHrTime >= 0 && currentHrTime < 12){
-            greetStr = "Good Morning";     
-        }else if(currentHrTime >= 12 && currentHrTime < 16){
-            greetStr = "Good Afternoon";
-        }else if(currentHrTime >= 16 && currentHrTime < 24){
-            greetStr = "Good Evening";
-        }
+        @Override
+            public void actionPerformed(ActionEvent e){
+                SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");  
+                Date date = new Date();  
+                //set time on timeLbl
+                timeLbl.setText(dateFormat.format(date));
+                //get hour of day from calendar
+                Calendar calendar = Calendar.getInstance();
+                int currentHrTime = calendar.get(Calendar.HOUR_OF_DAY);
+                //to determine whether current time is morning, afternoon or evening
+                if(currentHrTime >= 0 && currentHrTime < 12){
+                    greetStr = "Good Morning";     
+                }else if(currentHrTime >= 12 && currentHrTime < 16){
+                    greetStr = "Good Afternoon";
+                }else if(currentHrTime >= 16 && currentHrTime < 24){
+                    greetStr = "Good Evening";
+                }
+                greetingLbl.setText(greetStr + ", " + usernameLbl + ".");
+            }
+        });
+        t1.start();//start timer
+        t1.setRepeats(true);//timer will repeat
+        
         //set font and color
-        greetingLbl.setFont(new Font("Calibri", Font.BOLD, 60));
+        greetingLbl.setFont(new Font("Segoe UI", Font.PLAIN, 60));
         greetingLbl.setForeground(Color.white);
-        greetingLbl.setText(greetStr + ", " + usernameLbl + ".");
         //set width and height of timeLbl
         greetingLbl.setPreferredSize(new Dimension(1400, 100));
         //horizontal and vertical alignment 
@@ -328,6 +341,10 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 power = false;
                 //cannot click power button while switching off laptop
                 powerBtn.setEnabled(false);
+                //remove wallpaper
+                wallpaperPnl.setVisible(false);
+                //set layout to flowlayout to show shutdown animation
+                screen.setLayout(new FlowLayout());
                 
                 //display startup animation
                 shutdownAnimation.setVisible(true);
@@ -395,6 +412,11 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 t2.setRepeats(false);//timer only run once
             }
         }
+        if(e.getSource() == homeBtn){
+            screen.removeAll();
+            wallpaper();
+        }
+        
         if(e.getSource() == notepadBtn){
 //            if(power){
                 new notepad();
