@@ -202,6 +202,8 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     }
     
     public void wallpaper(){
+        //add wallpaper
+        screen.add(wallpaperLbl);
         //declare JLayeredPane to perform multi layer components
         wallpaperPnl = new JLayeredPane();
         //layer one
@@ -345,7 +347,8 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 wallpaperPnl.setVisible(false);
                 //set layout to flowlayout to show shutdown animation
                 screen.setLayout(new FlowLayout());
-                
+                //add shutdown animation to screen
+                screen.add(shutdownAnimation);
                 //display startup animation
                 shutdownAnimation.setVisible(true);
                 shutdownAnimation.setIcon(shutdownGif);
@@ -375,6 +378,8 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 power = true;
                 //cannot click power button while switching on laptop
                 powerBtn.setEnabled(false);
+                //add startup animation to screen
+                screen.add(startupAnimation);
                 //add component to screen panel
                 startupAnimation.setVisible(true);
                 startupAnimation.setIcon(startupGif);
@@ -416,7 +421,9 @@ public class LaptopSimulator extends JFrame implements ActionListener{
             screen.removeAll();
             wallpaper();
         }
-        
+        if(e.getSource() == settingBtn){
+            new Settings();
+        }
         if(e.getSource() == notepadBtn){
 //            if(power){
                 new notepad();
@@ -424,6 +431,15 @@ public class LaptopSimulator extends JFrame implements ActionListener{
 //                JOptionPane.showMessageDialog(null, "Laptop has not been switched on", "Error", JOptionPane.ERROR_MESSAGE);
 //            }
             
+        }
+        if(e.getSource() == installBtn){
+            new InstallSoftware();
+        }
+        if(e.getSource() == uninstallBtn){
+            new UninstallSoftware();
+        }
+        if(e.getSource() == openSoftwareBtn){
+            new softwareOpen();
         }
         if(e.getSource() == musicPlayerBtn){
             new musicPlayer();

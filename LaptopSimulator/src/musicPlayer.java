@@ -31,7 +31,8 @@ public class musicPlayer extends JFrame implements ActionListener {
         }
 
         JFrame player = new JFrame("Music Player");
-        player.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        player.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        player.setLocationRelativeTo(null);
         player.setLayout(new GridLayout(1, 3, 15, 5));//GridLayout(int rows, int cols, int horizontalgap, int verticalgap)
         player.add(play);
         player.add(stop);
