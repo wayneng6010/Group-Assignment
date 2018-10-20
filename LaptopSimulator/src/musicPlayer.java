@@ -9,11 +9,15 @@ import sun.audio.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.lang.Runnable;
+import java.util.ArrayList;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
 public class musicPlayer extends JFrame implements ActionListener, Runnable {
+    //dbhandler
+    DBHandler db = new DBHandler();
+    
     Thread t; // thread 
     AdvancedPlayer mediaPlayer; //media player
     Font font = new Font("Segoe UI", Font.BOLD, 22);//font
@@ -30,6 +34,9 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     //middle panel components
     Icon playlistIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/playlist.png");
     JLabel playlistLbl = new JLabel("Playlist");
+//    String songList[] = {};
+    DefaultListModel playlistModel = new DefaultListModel();
+    ArrayList<String> songList = new ArrayList<String>();
     JList playlist = new JList();
 
     //bottom panel components
@@ -49,7 +56,7 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     JButton delete = new JButton(deleteIcon);
 
     public musicPlayer() {
-        
+        songList.add("Hey");
         //top panels
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         //set font
@@ -68,6 +75,14 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         top.add(addBtn);
         
         //middle panel 
+        //retrieve data from database
+        songList = db.getPlaylist();
+        for (int i = 0; i < songList.size(); i++)
+            {
+                playlistModel.addElement(songList.get(i));
+            }
+        playlist.setModel(playlistModel);
+        
         JPanel middle = new JPanel(new FlowLayout(FlowLayout.LEFT));
         middle.setBackground(new Color(143, 170, 220, 100));
         playlist.setPreferredSize(new Dimension(500, 250));  
@@ -127,25 +142,36 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         
 
     }
-
+    String filePath = null;
+    String fileName = null;
+    
+    
     public void actionPerformed(ActionEvent e) {
+        
         if (e.getSource() == chooseBtn) {
-            String fileName = null;
-            String filePath = null;
             JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 Files", "mp3");
-            chooser.setFileFilter(filter);
-             int returnVal = chooser.showOpenDialog(this);
-             if(returnVal == JFileChooser.APPROVE_OPTION) {
-                fileName = chooser.getSelectedFile().getName();
-                filePath = chooser.getSelectedFile().getAbsolutePath();
-                filePath = filePath.replace('\\', '/');
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 Files", "mp3");//only mp3 format of files can be shown
+            chooser.setFileFilter(filter);//only mp3 format of file can be shown
+            int returnVal = chooser.showOpenDialog(this); //show file chooser window
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                fileName = chooser.getSelectedFile().getName();//get mp3 file name
+                filePath = chooser.getSelectedFile().getAbsolutePath();//get mp3 file path
+                filePath = filePath.replace('\\', '/');// replace the backslash to forward slash in filePath
                 fileLbl.setText(fileName);
                 JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
-             }
+            }
         }
         else if (e.getSource() == addBtn) {
             
+            songList.add(fileName);
+            for (int i = 0; i < songList.size(); i++)
+            {
+                playlistModel.addElement(songList.get(i));
+            }
+            playlist.setModel(playlistModel);
+//            playlist.validate();
+//            playlist.repaint();
+            JOptionPane.showMessageDialog(null, songList, "Error", JOptionPane.ERROR_MESSAGE);
         }
         else if (e.getSource() == play) {
             t = new Thread(this);
@@ -169,9 +195,12 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         public void run(){
             FileInputStream file;
             try{
-            file = new FileInputStream("D:/_Object Oriented Development/Group Assignment/Images/music.mp3"); 
-            mediaPlayer = new AdvancedPlayer(file);
-            mediaPlayer.play();
+                String selectedSong = playlist.getSelectedValue().toString();
+                String filePath = db.getSongPath(selectedSong);
+//                JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
+                file = new FileInputStream(filePath); 
+                mediaPlayer = new AdvancedPlayer(file);
+                mediaPlayer.play();
             }catch(FileNotFoundException e){
                 e.printStackTrace();
             }catch(JavaLayerException e){
