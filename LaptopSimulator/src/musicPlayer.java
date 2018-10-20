@@ -12,24 +12,16 @@ import java.lang.Runnable;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
-public class musicPlayer extends JFrame implements ActionListener {
+public class musicPlayer extends JFrame implements ActionListener, Runnable {
     
+    Thread t; 
     AdvancedPlayer mediaPlayer;
     JButton play = new JButton("Play");
     JButton stop = new JButton("Stop");
     JButton pause = new JButton("Pause");
 
     public musicPlayer() {
-        try{
-            FileInputStream file = new FileInputStream("D:/_Object Oriented Development/Group Assignment/Images/music.mp3"); 
-            mediaPlayer = new AdvancedPlayer(file);
-            
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-        }catch(JavaLayerException e){
-            e.printStackTrace();
-        }
-
+        
         JFrame player = new JFrame("Music Player");
 //        player.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         player.setLocationRelativeTo(null);
@@ -39,12 +31,15 @@ public class musicPlayer extends JFrame implements ActionListener {
         player.add(pause);
         player.pack();
         player.setVisible(true);
-        
+        t = new Thread(this);
 //        String bip = "D:/_Object Oriented Development/Group Assignment/Images/music.mp3";
 //        Media hit = new Media(new File(bip).toURI().toString());
 //        mediaPlayer = new MediaPlayer(hit);
         
         play.addActionListener(this);
+        pause.addActionListener(this);
+        stop.addActionListener(this);
+
 //        try {
 //            as = new AudioStream(this.getClass().getResourceAsStream("music.wav"));
 //        } catch (IOException e) {
@@ -55,30 +50,29 @@ public class musicPlayer extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == play) {
-            try{
-                mediaPlayer.play();
-                Timer t = new javax.swing.Timer(7000, new ActionListener(){
-            @Override
-                public void actionPerformed(ActionEvent e){
-                    java.awt.Window win[] = java.awt.Window.getWindows(); 
-                for(int i=0;i<win.length;i++){ 
-                win[i].dispose(); 
-            } 
-            LaptopSimulator ls = new LaptopSimulator();
-                }
-            });
-            t.start();
-            }catch(JavaLayerException ev){
-            ev.printStackTrace();
-            }
-            
+            t.start();           
         }
-        if (e.getSource() == stop) {
-            mediaPlayer.stop();
+        else if (e.getSource() == pause) {
+            t.suspend();
         }
-        if (e.getSource() == pause) {
-            mediaPlayer.close();
+        else if (e.getSource() == stop) {
+            t.stop();
         }
+        
     }
+    
+    @Override
+        public void run(){
+            FileInputStream file;
+            try{
+            file = new FileInputStream("D:/_Object Oriented Development/Group Assignment/Images/music.mp3"); 
+            mediaPlayer = new AdvancedPlayer(file);
+            mediaPlayer.play();
+            }catch(FileNotFoundException e){
+                e.printStackTrace();
+            }catch(JavaLayerException e){
+                e.printStackTrace();
+            }
+        }
 
 }

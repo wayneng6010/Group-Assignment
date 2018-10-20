@@ -96,7 +96,7 @@ bottom4.add(Box.createRigidArea(new Dimension(10, 0)));
                 for(int i=0;i<win.length;i++){ 
                 win[i].dispose(); 
             } 
-            LaptopSimulator ls = new LaptopSimulator();
+            LaptopSimulator ls = new LaptopSimulator(true);
             ls.notepadTxt.setText(note);
             ls.notepad();
         }

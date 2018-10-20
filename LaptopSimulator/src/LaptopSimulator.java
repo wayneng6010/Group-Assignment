@@ -79,9 +79,11 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     JLayeredPane wallpaperPnl;
             
     public static void main(String[] args) {
-        LaptopSimulator home = new LaptopSimulator();
+        LaptopSimulator home = new LaptopSimulator(false);
     }
-    public LaptopSimulator(){
+    
+    public LaptopSimulator(boolean power){
+        this.power = power;
         //Screen
         screen = new JPanel();
         //Preferences
@@ -179,15 +181,16 @@ public class LaptopSimulator extends JFrame implements ActionListener{
         setResizable(false);
         setLocationRelativeTo(null);
         
-        //button is disabled before switching on the laptop 
-//        homeBtn.setEnabled(false);
-//        notepadBtn.setEnabled(false);
-//        installBtn.setEnabled(false);
-//        uninstallBtn.setEnabled(false);
-//        openSoftwareBtn.setEnabled(false);
-//        musicPlayerBtn.setEnabled(false);
-//        settingBtn.setEnabled(false);
-        
+        if(!this.power){
+            //button is disabled before switching on the laptop 
+            homeBtn.setEnabled(false);
+            notepadBtn.setEnabled(false);
+            installBtn.setEnabled(false);
+            uninstallBtn.setEnabled(false);
+            openSoftwareBtn.setEnabled(false);
+            musicPlayerBtn.setEnabled(false);
+            settingBtn.setEnabled(false);
+        }
         
         //add action listeners to buttons
         powerBtn.addActionListener(this);
@@ -339,15 +342,18 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e){
         
         if(e.getSource() == powerBtn){
-            if(power){
-                power = false;
+            if(this.power){
+                this.power = false;
                 //cannot click power button while switching off laptop
                 powerBtn.setEnabled(false);
-                //remove wallpaper
-                wallpaperPnl.setVisible(false);
+//                //remove wallpaper
+//                wallpaperPnl.setVisible(false);
                 //set layout to flowlayout to show shutdown animation
-                screen.setLayout(new FlowLayout());
+                screen.removeAll();
                 //add shutdown animation to screen
+                screen.setLayout(new FlowLayout());
+                //remove everything from screen before playing animation
+                
                 screen.add(shutdownAnimation);
                 //display startup animation
                 shutdownAnimation.setVisible(true);
@@ -363,7 +369,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 settingBtn.setEnabled(false);
                 
                 //timer which function will executed after 7 secs
-                Timer t1 = new javax.swing.Timer(7000, new ActionListener(){
+                Timer t1 = new javax.swing.Timer(5000, new ActionListener(){
                 @Override
                     public void actionPerformed(ActionEvent e){
                         shutdownAnimation.setVisible(false);
@@ -375,9 +381,11 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 t1.setRepeats(false);//timer only run once
             }
             else{
-                power = true;
+                this.power = true;
                 //cannot click power button while switching on laptop
                 powerBtn.setEnabled(false);
+                //remove everything from screen before playing animation
+                screen.removeAll();
                 //add startup animation to screen
                 screen.add(startupAnimation);
                 //add component to screen panel
