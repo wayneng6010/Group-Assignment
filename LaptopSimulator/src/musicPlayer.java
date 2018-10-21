@@ -36,8 +36,8 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     JLabel playlistLbl = new JLabel("Playlist");
 //    String songList[] = {};
     DefaultListModel playlistModel = new DefaultListModel();
-    ArrayList<String> songList = new ArrayList<String>();
-    JList playlist = new JList();
+    ArrayList<String> songListArr = new ArrayList<String>();
+    JList playlistList = new JList();
 
     //bottom panel components
     Icon playIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/play.png");
@@ -56,7 +56,7 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     JButton delete = new JButton(deleteIcon);
 
     public musicPlayer() {
-        songList.add("Hey");
+        songListArr.add("Hey");
         //top panels
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         //set font
@@ -76,26 +76,26 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         
         //middle panel 
         //retrieve data from database
-        songList = db.getPlaylist();
-        for (int i = 0; i < songList.size(); i++)
+        songListArr = db.getPlaylist();
+        for (int i = 0; i < songListArr.size(); i++)
             {
-                playlistModel.addElement(songList.get(i));
+                playlistModel.addElement(songListArr.get(i));
             }
-        playlist.setModel(playlistModel);
+        playlistList.setModel(playlistModel);
         
         JPanel middle = new JPanel(new FlowLayout(FlowLayout.LEFT));
         middle.setBackground(new Color(143, 170, 220, 100));
-        playlist.setPreferredSize(new Dimension(500, 250));  
+        playlistList.setPreferredSize(new Dimension(500, 250));  
         //set font
         playlistLbl.setFont(font);
         playlistLbl.setIcon(playlistIcon);
-        playlist.setFont(font);
+        playlistList.setFont(font);
         // add components to middle panel
         middle.add(Box.createRigidArea(new Dimension(800, 15))); //create space
         middle.add(Box.createRigidArea(new Dimension(50, 0))); //create space
         middle.add(playlistLbl);
         middle.add(Box.createRigidArea(new Dimension(60, 0))); //create space
-        middle.add(playlist);
+        middle.add(playlistList);
         
         // bottom panel
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -162,16 +162,20 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
             }
         }
         else if (e.getSource() == addBtn) {
-            
-            songList.add(fileName);
-            for (int i = 0; i < songList.size(); i++)
+            playlistModel.clear();//clear the model before setting an updated one
+//            playlistList.setModel(new DefaultListModel());
+//            playlistList.validate();
+//            playlistList.repaint();
+            db.addSong(fileName, filePath);//store song data into database
+            songListArr.add(fileName);
+            for (int i = 0; i < songListArr.size(); i++)
             {
-                playlistModel.addElement(songList.get(i));
+                playlistModel.addElement(songListArr.get(i));
             }
-            playlist.setModel(playlistModel);
+            playlistList.setModel(playlistModel);
 //            playlist.validate();
 //            playlist.repaint();
-            JOptionPane.showMessageDialog(null, songList, "Error", JOptionPane.ERROR_MESSAGE);
+//JOptionPane.showMessageDialog(null, songListArr, "Error", JOptionPane.ERROR_MESSAGE);
         }
         else if (e.getSource() == play) {
             t = new Thread(this);
@@ -187,7 +191,15 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
             t.resume();
         }
         else if (e.getSource() == delete) {
-            
+            String selectedSong = playlistList.getSelectedValue().toString();
+            db.deleteSong(selectedSong);
+            playlistModel.clear();//clear the model before setting an updated one
+            songListArr = db.getPlaylist();
+            for (int i = 0; i < songListArr.size(); i++)
+            {
+                playlistModel.addElement(songListArr.get(i));
+            }
+            playlistList.setModel(playlistModel);
         }
     }
     
@@ -195,7 +207,7 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         public void run(){
             FileInputStream file;
             try{
-                String selectedSong = playlist.getSelectedValue().toString();
+                String selectedSong = playlistList.getSelectedValue().toString();
                 String filePath = db.getSongPath(selectedSong);
 //                JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
                 file = new FileInputStream(filePath); 

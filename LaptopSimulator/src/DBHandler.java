@@ -65,4 +65,26 @@ public class DBHandler {
         }
         return result;
     }
+    
+    public boolean addSong(String songName, String songPath){
+        String writeString = "INSERT INTO Playlist VALUES(" + null + ",\"" + songName + "\",\"" + songPath + "\")";
+        try {
+            myStatement.executeUpdate(writeString);
+        }
+        catch (SQLException sqle) {
+            return false; 
+        }
+            return true; // inserted OK
+    }
+    
+    public boolean deleteSong(String songName){
+        String deleteString = "DELETE FROM Playlist WHERE SongName=\"" + songName + "\"" ;
+        try {
+            myStatement.executeUpdate(deleteString);
+        }
+        catch (SQLException sqle) {
+            return false; 
+        }
+            return true; // inserted OK
+    }
 }
