@@ -51,7 +51,7 @@ public class DBHandler {
         try {
             ResultSet results = myStatement.executeQuery
                 ("SELECT SongPath FROM Playlist WHERE SongName=\"" + songName + "\"");
-            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
 
             if (results.next()) {
                 result = results.getString(1);

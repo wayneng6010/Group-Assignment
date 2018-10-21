@@ -1,14 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import javax.swing.*;
-import sun.audio.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import java.lang.Runnable;
 import java.util.ArrayList;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javazoom.jl.decoder.JavaLayerException;
@@ -34,10 +28,11 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     //middle panel components
     Icon playlistIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/playlist.png");
     JLabel playlistLbl = new JLabel("Playlist");
-//    String songList[] = {};
     DefaultListModel playlistModel = new DefaultListModel();
     ArrayList<String> songListArr = new ArrayList<String>();
     JList playlistList = new JList();
+    
+
 
     //bottom panel components
     Icon playIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/play.png");
@@ -54,7 +49,12 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     
     Icon deleteIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/delete.png");
     JButton delete = new JButton(deleteIcon);
-
+    
+    //instance variables
+    String filePath = null;
+    String fileName = null;
+    String selectedSongPlay = "";
+    
     public musicPlayer() {
         songListArr.add("Hey");
         //top panels
@@ -85,7 +85,8 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         
         JPanel middle = new JPanel(new FlowLayout(FlowLayout.LEFT));
         middle.setBackground(new Color(143, 170, 220, 100));
-        playlistList.setPreferredSize(new Dimension(500, 250));  
+        playlistList.setPreferredSize(new Dimension(500, 250));
+        
         //set font
         playlistLbl.setFont(font);
         playlistLbl.setIcon(playlistIcon);
@@ -96,9 +97,18 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         middle.add(playlistLbl);
         middle.add(Box.createRigidArea(new Dimension(60, 0))); //create space
         middle.add(playlistList);
+        //add scroll pane to JList playlist
+        JScrollPane scrollPane = new JScrollPane(playlistList);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        middle.add(scrollPane);
         
         // bottom panel
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // button default properties
+        pause.setEnabled(false);
+        resume.setEnabled(false);
+        stop.setEnabled(false);
         // add components to bottom panel
         bottom.add(play);
         bottom.add(pause);
@@ -108,11 +118,6 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         bottom.add(delete);
         
         bottom.setVisible(true);
-//        t = new Thread(this);
-//        String bip = "D:/_Object Oriented Development/Group Assignment/Images/music.mp3";
-//        Media hit = new Media(new File(bip).toURI().toString());
-//        mediaPlayer = new MediaPlayer(hit);
-        
 
         //add JPanel to window
         add("North", top);
@@ -134,16 +139,8 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         stop.addActionListener(this);
         resume.addActionListener(this);
         delete.addActionListener(this);
-//        try {
-//            as = new AudioStream(this.getClass().getResourceAsStream("music.wav"));
-//        } catch (IOException e) {
-//            JOptionPane.showMessageDialog(null, "Unable to play audio", "Alert", JOptionPane.ERROR_MESSAGE);
-//        }
         
-
     }
-    String filePath = null;
-    String fileName = null;
     
     
     public void actionPerformed(ActionEvent e) {
@@ -158,62 +155,101 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
                 filePath = chooser.getSelectedFile().getAbsolutePath();//get mp3 file path
                 filePath = filePath.replace('\\', '/');// replace the backslash to forward slash in filePath
                 fileLbl.setText(fileName);
-                JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
+//                JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (e.getSource() == addBtn) {
-            playlistModel.clear();//clear the model before setting an updated one
-//            playlistList.setModel(new DefaultListModel());
-//            playlistList.validate();
-//            playlistList.repaint();
-            db.addSong(fileName, filePath);//store song data into database
-            songListArr.add(fileName);
-            for (int i = 0; i < songListArr.size(); i++)
-            {
-                playlistModel.addElement(songListArr.get(i));
+            if(filePath != null){
+                playlistModel.clear();//clear the model before setting an updated one
+                db.addSong(fileName, filePath);//store song data into database
+                songListArr.add(fileName);
+                for (int i = 0; i < songListArr.size(); i++)
+                {
+                    playlistModel.addElement(songListArr.get(i));
+                }
+                playlistList.setModel(playlistModel);
+            }else{
+                JOptionPane.showMessageDialog(null, "Please upload a MP3 file first.", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            playlistList.setModel(playlistModel);
-//            playlist.validate();
-//            playlist.repaint();
-//JOptionPane.showMessageDialog(null, songListArr, "Error", JOptionPane.ERROR_MESSAGE);
         }
         else if (e.getSource() == play) {
-            t = new Thread(this);
-            t.start();           
+            //check if any song is selected in JList playlist
+            if(playlistList.isSelectionEmpty()){
+                JOptionPane.showMessageDialog(null, "Please select a song in the playlist.", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                play.setEnabled(false);
+                pause.setEnabled(true);
+                resume.setEnabled(true);
+                stop.setEnabled(true);
+                t = new Thread(this);
+                t.start();
+            }
         }
         else if (e.getSource() == pause) {
             t.suspend();
         }
         else if (e.getSource() == stop) {
+            play.setEnabled(true);
+            pause.setEnabled(false);
+            resume.setEnabled(false);
+            stop.setEnabled(false);
             t.stop();
         }
         else if (e.getSource() == resume) {
             t.resume();
         }
         else if (e.getSource() == delete) {
-            String selectedSong = playlistList.getSelectedValue().toString();
-            db.deleteSong(selectedSong);
-            playlistModel.clear();//clear the model before setting an updated one
-            songListArr = db.getPlaylist();
-            for (int i = 0; i < songListArr.size(); i++)
-            {
-                playlistModel.addElement(songListArr.get(i));
+            //check if any song is selected in JList playlist
+            if(playlistList.isSelectionEmpty()){
+                JOptionPane.showMessageDialog(null, "Please select a song in the playlist.", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                String selectedSong = playlistList.getSelectedValue().toString();
+                int confirm;
+                boolean success;
+                confirm = JOptionPane.showConfirmDialog (null, "Are sure to delete this song from playlist?", "Delete song", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION){
+                    try{
+                        if(t.isAlive() && (selectedSongPlay.equals(selectedSong))){
+                            t.stop();//stop the music
+                            play.setEnabled(true);
+                            pause.setEnabled(false);
+                            resume.setEnabled(false);
+                            stop.setEnabled(false);
+                        }
+                    }catch(Exception ev){
+
+                    }
+                    success = db.deleteSong(selectedSong);
+                    if(success){
+                        playlistModel.clear();//clear the model before setting an updated one
+                        songListArr = db.getPlaylist();
+                        for (int i = 0; i < songListArr.size(); i++){
+                            playlistModel.addElement(songListArr.get(i));
+                        }
+                        playlistList.setModel(playlistModel);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Failed to delete song.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
-            playlistList.setModel(playlistModel);
+            
         }
     }
     
     @Override
         public void run(){
             FileInputStream file;
+            
             try{
-                String selectedSong = playlistList.getSelectedValue().toString();
-                String filePath = db.getSongPath(selectedSong);
+                selectedSongPlay = playlistList.getSelectedValue().toString();
+                String filePath = db.getSongPath(selectedSongPlay);
 //                JOptionPane.showMessageDialog(null, filePath, "Error", JOptionPane.ERROR_MESSAGE);
                 file = new FileInputStream(filePath); 
                 mediaPlayer = new AdvancedPlayer(file);
                 mediaPlayer.play();
             }catch(FileNotFoundException e){
+                JOptionPane.showMessageDialog(null, "MP3 file not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                db.deleteSong(selectedSongPlay);
                 e.printStackTrace();
             }catch(JavaLayerException e){
                 e.printStackTrace();
