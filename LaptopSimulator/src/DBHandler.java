@@ -67,14 +67,27 @@ public class DBHandler {
     }
     
     public boolean addSong(String songName, String songPath){
-        String writeString = "INSERT INTO Playlist VALUES(" + null + ",\"" + songName + "\",\"" + songPath + "\")";
         try {
-            myStatement.executeUpdate(writeString);
+        ResultSet results = myStatement.executeQuery
+                ("SELECT SongPath FROM Playlist WHERE SongName=\"" + songName + "\"");
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+            if (results.next() == false) {
+                String writeString = "INSERT INTO Playlist VALUES(" + null + ",\"" + songName + "\",\"" + songPath + "\")";
+                try {
+                    myStatement.executeUpdate(writeString);
+                }
+                catch (SQLException sqle) {
+                    return false; 
+                }
+                    return true; // inserted OK
+            }else{
+                return false; 
+            }
         }
         catch (SQLException sqle) {
-            return false; 
+            out.println(sqle);
         }
-            return true; // inserted OK
+        return false; 
     }
     
     public boolean deleteSong(String songName){

@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import javax.swing.*;
 import java.util.ArrayList;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+// JLayer - Open Source MP3 Library (Link -> http://www.javazoom.net/javalayer/javalayer.html)
+// used to play mp3 files 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
@@ -32,8 +35,6 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     ArrayList<String> songListArr = new ArrayList<String>();
     JList playlistList = new JList();
     
-
-
     //bottom panel components
     Icon playIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/play.png");
     JButton play = new JButton(playIcon);
@@ -56,7 +57,6 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     String selectedSongPlay = "";
     
     public musicPlayer() {
-        songListArr.add("Hey");
         //top panels
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         //set font
@@ -82,11 +82,13 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
                 playlistModel.addElement(songListArr.get(i));
             }
         playlistList.setModel(playlistModel);
-        
+
         JPanel middle = new JPanel(new FlowLayout(FlowLayout.LEFT));
         middle.setBackground(new Color(143, 170, 220, 100));
-        playlistList.setPreferredSize(new Dimension(500, 250));
-        
+        playlistList.setFixedCellHeight(30);
+        playlistList.setFixedCellWidth(500);
+        playlistList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//only can select item at a time
+
         //set font
         playlistLbl.setFont(font);
         playlistLbl.setIcon(playlistIcon);
@@ -99,7 +101,6 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         middle.add(playlistList);
         //add scroll pane to JList playlist
         JScrollPane scrollPane = new JScrollPane(playlistList);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         middle.add(scrollPane);
         
@@ -127,7 +128,7 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         // window properties
         setSize(800, 480);
         setTitle("Music Player");
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -139,6 +140,15 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         stop.addActionListener(this);
         resume.addActionListener(this);
         delete.addActionListener(this);
+        
+        this.addWindowListener(new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent e) {
+            if(pause.isEnabled() == true){
+                t.stop();//stop music player when the window is closed
+            }
+        }
+        });
         
     }
     
@@ -161,8 +171,12 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         else if (e.getSource() == addBtn) {
             if(filePath != null){
                 playlistModel.clear();//clear the model before setting an updated one
-                db.addSong(fileName, filePath);//store song data into database
-                songListArr.add(fileName);
+                boolean addSucess = db.addSong(fileName, filePath);//store song data into database
+                if (!addSucess){
+                    JOptionPane.showMessageDialog(null, "This MP3 file already in the playlist", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }else{
+                    songListArr.add(fileName);
+                }
                 for (int i = 0; i < songListArr.size(); i++)
                 {
                     playlistModel.addElement(songListArr.get(i));
@@ -249,11 +263,27 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
                 mediaPlayer.play();
             }catch(FileNotFoundException e){
                 JOptionPane.showMessageDialog(null, "MP3 file not found.", "Error", JOptionPane.ERROR_MESSAGE);
-                db.deleteSong(selectedSongPlay);
+                play.setEnabled(true);
+                pause.setEnabled(false);
+                resume.setEnabled(false);
+                stop.setEnabled(false);
+                int confirm = JOptionPane.showConfirmDialog (null, "Do you want to remove this song from the playlist since it cannot be found?", "File Not Found", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION){
+                    boolean success = db.deleteSong(selectedSongPlay);
+                    if(success){
+                        playlistModel.clear();//clear the model before setting an updated one
+                        songListArr = db.getPlaylist();
+                        for (int i = 0; i < songListArr.size(); i++){
+                            playlistModel.addElement(songListArr.get(i));
+                        }
+                        playlistList.setModel(playlistModel);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Failed to delete song.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 e.printStackTrace();
             }catch(JavaLayerException e){
                 e.printStackTrace();
             }
         }
-
 }

@@ -355,7 +355,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 //remove everything from screen before playing animation
                 
                 screen.add(shutdownAnimation);
-                //display startup animation
+                //display startup animationq
                 shutdownAnimation.setVisible(true);
                 shutdownAnimation.setIcon(shutdownGif);
                 
