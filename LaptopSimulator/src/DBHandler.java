@@ -100,4 +100,113 @@ public class DBHandler {
         }
             return true; // inserted OK
     }
+    
+    //Settings
+    public boolean changeWallpaper(String path){
+        String deleteString = "DELETE FROM wallpaper";
+        String writeString = "INSERT INTO wallpaper VALUES(\"" + path + "\")";
+        try {
+            myStatement.executeUpdate(deleteString);
+            myStatement.executeUpdate(writeString);
+        }
+        catch (SQLException sqle) {
+            return false; 
+        }
+            return true; // inserted OK
+    }
+    
+    public String getWallpaperPath(){
+        String result = "";
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT * FROM wallpaper");
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+            if (results.next()) {
+                result = results.getString(1);
+            }else{
+                result = "D:/_Object Oriented Development/Group Assignment/Images/wallpaper.jpg"; // default wallpaper
+            }
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return result;
+    }
+    
+    //install software
+    public boolean installSoftware(String name){
+        try {
+        ResultSet results = myStatement.executeQuery
+                ("SELECT * FROM SoftwareInstall WHERE Software=\"" + name + "\"");
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+            if (results.next() == false) {
+                String writeString = "INSERT INTO SoftwareInstall VALUES(\"" + name + "\")";
+                try {
+                    myStatement.executeUpdate(writeString);
+                }
+                catch (SQLException sqle) {
+                    return false; 
+                }
+                    return true; // inserted OK
+            }else{
+                return false; 
+            }
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return false; 
+    }
+    
+    //get installed software
+    public ArrayList<String> getInstalledSoftware(){
+        ArrayList<String> result = new ArrayList<String>();
+        int counter = 0;
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT * FROM SoftwareInstall");
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+            while (results.next()) {
+                result.add(results.getString(1));
+            }
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return (result);
+    }
+    //uninstall software
+    public boolean UninstallSoftware(String name){
+        String deleteString = "DELETE FROM SoftwareInstall WHERE Software=\"" + name + "\"" ;
+        try {
+            myStatement.executeUpdate(deleteString);
+        }
+        catch (SQLException sqle) {
+            return false; 
+        }
+            return true; // inserted OK
+    }
+
+    //get software description
+    public String getDescription(String softwareName){
+        String result = "";
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT Description FROM Software WHERE Software=\"" + softwareName + "\"");
+//            JOptionPane.showMessageDialog(null, Description, "Error", JOptionPane.ERROR_MESSAGE);
+
+            if (results.next()) {
+                result = results.getString(1);
+            }else{
+                JOptionPane.showMessageDialog(null, "Description not found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return result;
+    }
 }

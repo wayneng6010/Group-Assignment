@@ -17,7 +17,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     JLabel shutdownAnimation = new JLabel();
     
     //wallpaper
-    ImageIcon wallpaperJpg = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/wallpaper.jpg");
+    ImageIcon wallpaperJpg = new ImageIcon();
     JLabel wallpaperLbl = new JLabel();
     
     //time and greeting above wallpaper background
@@ -66,7 +66,6 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     
     //power on or off (false = off)
     boolean power = false;
-    String usernameLbl = "YourName";
     
     //home button
     Icon homeIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/home.png");
@@ -78,12 +77,16 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     //panel for wallpaper
     JLayeredPane wallpaperPnl;
             
+    //DBHandler
+    DBHandler db = new DBHandler();
+    
     public static void main(String[] args) {
         LaptopSimulator home = new LaptopSimulator(false);
     }
     
     public LaptopSimulator(boolean power){
         this.power = power;
+        
         //Screen
         screen = new JPanel();
         //Preferences
@@ -205,6 +208,9 @@ public class LaptopSimulator extends JFrame implements ActionListener{
     }
     
     public void wallpaper(){
+        //Get wallpaper
+        String wallpaperPath = db.getWallpaperPath();
+        wallpaperJpg = new ImageIcon(wallpaperPath);
         //add wallpaper
         screen.add(wallpaperLbl);
         //declare JLayeredPane to perform multi layer components
@@ -261,7 +267,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
                 }else if(currentHrTime >= 16 && currentHrTime < 24){
                     greetStr = "Good Evening";
                 }
-                greetingLbl.setText(greetStr + ", " + usernameLbl + ".");
+                greetingLbl.setText(greetStr + ".");
             }
         });
         t1.start();//start timer

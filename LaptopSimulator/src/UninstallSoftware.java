@@ -1,54 +1,68 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class UninstallSoftware  extends JFrame implements ActionListener{
-    JLabel lbl = new JLabel("Sort By: ");
-    JComboBox cbx = new JComboBox();
-    JButton btnSearch = new JButton("Search");
     JList list = new JList();
-    JLabel lbl1 = new JLabel("Software Discription:");
-    JLabel lbl2 = new JLabel("..........");
     JButton btnInstall = new JButton("Uninstall");
     
+    DBHandler db = new DBHandler();
+    
 public UninstallSoftware(){
+    
         setLayout(new BorderLayout());
-        setSize(400,250);
-        setTitle("Unistall Software");
+        setSize(500,200);
+        setTitle("Uninstall Software");
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         
-        JPanel top = new JPanel();
-        top.add(lbl);
-        top.add(cbx);
-        cbx.addItem("Microsft Word");
-        cbx.addItem("Microsoft Excel");
-        cbx.addItem("Adobe PhotoShop");
-        cbx.addItem("Adobe Premiere Pro"); 
-        top.add(btnSearch);
-        add("North", top);
-        
         JPanel middle = new JPanel();
-        String installList[]= {"Microsoft Word", "Microsoft Excel", "Adobe PhotoShop", "Adobe Premiere Pro"};
-        list = new JList(installList);
+        String[] installArr = {};
+        ArrayList<String> installList = new ArrayList<>();
+        installArr = db.getInstalledSoftware().toArray(installArr);
+        list = new JList(installArr);
         list.setSelectedIndex(2);
         middle.add(list);
-        add("Center", middle);
+        add("North", middle);
         
         JPanel bottom = new JPanel();
-        bottom.add(lbl1);
-        bottom.add(lbl2);
         bottom.setLayout(new FlowLayout());
         bottom.add(btnInstall);
         add("South", bottom);
         
-        setVisible(true);    
+        setVisible(true);
+        
+        btnInstall.addActionListener(this);
 }
 
 public void actionPerformed(ActionEvent e){
-
+    if (e.getSource() == btnInstall){
+        String selectedSoftware = list.getSelectedValue().toString();
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure to uninstall " + selectedSoftware + " ?" ,"Confirmation", JOptionPane.YES_NO_OPTION);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            if(list.isSelectionEmpty()){
+                    JOptionPane.showMessageDialog(null, "Please select a software in the list.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }else{
+                    boolean success = db.UninstallSoftware(selectedSoftware);
+                    if(success){
+                        DefaultListModel softwareListModel = new DefaultListModel();
+                        ArrayList<String> softwareListArr = new ArrayList<String>();
+                        softwareListModel.clear();//clear the model before setting an updated one
+                        softwareListArr = db.getInstalledSoftware();
+                        for (int i = 0; i < softwareListArr.size(); i++){
+                            softwareListModel.addElement(softwareListArr.get(i));
+                        }
+                        list.setModel(softwareListModel);
+                        JOptionPane.showMessageDialog(null, selectedSoftware + " uninstall successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Failed to uninstall." + selectedSoftware, "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+            }
+        }
     }
+}
 }
     
 
