@@ -71,7 +71,6 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
         top.add(Box.createRigidArea(new Dimension(20, 0))); //create space
         top.add(chooseBtn);
         top.add(fileLbl);
-        top.add(Box.createRigidArea(new Dimension(10, 0))); //create space
         top.add(addBtn);
         
         //middle panel 

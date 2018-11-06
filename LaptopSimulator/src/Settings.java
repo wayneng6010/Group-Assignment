@@ -19,11 +19,7 @@ public class Settings extends JFrame implements ActionListener
     Font font2 = new Font("Times", Font.BOLD, 20);//font
     //instance variables
     String filePath = null;
-    String selectedSongPlay = "";
     
-    public static void main(String[] args) {
-     Settings St = new Settings();
-    }
     public Settings(){
         setLayout(new FlowLayout(FlowLayout.LEFT));
         setSize(710,160);
