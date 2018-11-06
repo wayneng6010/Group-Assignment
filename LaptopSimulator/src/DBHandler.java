@@ -231,4 +231,70 @@ public class DBHandler {
         }
         return result;
     }
+    
+    //get file from database
+    public String getFile(String fileName){
+        String result ="";
+        try{
+            //select the file and display the notepsf
+            ResultSet results = myStatement.executeQuery
+                ("SELECT note FROM notepad WHERE fileName=\"" + fileName + "\"");
+            if (results.next()) {
+                result = results.getString(1);
+            }else{
+                JOptionPane.showMessageDialog(null, "Record not found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            results.close();
+        }
+        catch (SQLException sqle){
+            out.println(sqle);
+        }
+        return result;
+    }
+    //save the note into a new fileName in database
+    public boolean saveFile(String fileName, String notepad){
+        String writeString = "INSERT INTO notepad (fileName, note) VALUES(\"" + fileName + "\",\""+notepad+"\")";
+        try {
+            myStatement.executeUpdate(writeString);
+        }
+        catch (SQLException sqle) {
+            return false; 
+        }
+            return true; // inserted OK
+    }
+
+    //get fileName
+    public ArrayList<String> getFiles() {
+        ArrayList<String> fileList = new ArrayList<String>();
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT fileName FROM notepad");
+            while (results.next()) {
+                fileList.add(results.getString(1));
+            }
+            // STEP 5
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return fileList;
+    }
+    //get softwareName
+    public ArrayList<String> getSoftware() {
+        ArrayList<String> SoftwareList = new ArrayList<String>();
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT * FROM SoftwareInstall");
+            while (results.next()) {
+                SoftwareList.add(results.getString("Software"));
+            }
+            // STEP 5
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return SoftwareList;
+    }
 }
