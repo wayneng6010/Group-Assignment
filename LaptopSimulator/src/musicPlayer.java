@@ -18,7 +18,7 @@ public class musicPlayer extends JFrame implements ActionListener, Runnable {
     Thread t; // thread 
     AdvancedPlayer mediaPlayer; //media player
     Font font = new Font("Segoe UI", Font.BOLD, 22);//font
-    Font font1 = new Font("Times New Roman", Font.BOLD, 20);//font
+    Font font1 = new Font("Times", Font.BOLD, 20);//font
     
     //top panel components
     JLabel chooseLbl = new JLabel("Add Music");

@@ -5,32 +5,49 @@ import java.util.ArrayList;
 
 public class UninstallSoftware  extends JFrame implements ActionListener{
     JList list = new JList();
+    JLabel lbl1 = new JLabel("Softwares:");
     JButton btnInstall = new JButton("Uninstall");
-    
+    Font font1 = new Font("Segoe UI", Font.BOLD, 22);//font
+    Font font2 = new Font("Times", Font.PLAIN, 20);//font
     DBHandler db = new DBHandler();
     
 public UninstallSoftware(){
     
         setLayout(new BorderLayout());
-        setSize(500,200);
+        setSize(600,400);
         setTitle("Uninstall Software");
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         
-        JPanel middle = new JPanel();
+        JPanel middle = new JPanel(new FlowLayout(FlowLayout.CENTER));
         String[] installArr = {};
         ArrayList<String> installList = new ArrayList<>();
         installArr = db.getInstalledSoftware().toArray(installArr);
         list = new JList(installArr);
+        lbl1.setFont(font1);
+        lbl1.setPreferredSize(new Dimension(600, 20));
+        lbl1.setHorizontalAlignment(SwingConstants.CENTER);
+
+        list.setFixedCellWidth(600);
+        list.setFont(font2);
         list.setSelectedIndex(2);
+        //align list item center
+        DefaultListCellRenderer renderer = (DefaultListCellRenderer) list.getCellRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        middle.setPreferredSize(new Dimension(600, 280));
+        middle.add(Box.createRigidArea(new Dimension(1, 20))); //create space
+        middle.add(lbl1);
+        middle.add(Box.createRigidArea(new Dimension(1, 20))); //create space
         middle.add(list);
         add("North", middle);
         
-        JPanel bottom = new JPanel();
-        bottom.setLayout(new FlowLayout());
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnInstall.setFont(font1);
+        btnInstall.setPreferredSize(new Dimension(200, 40));
+        bottom.setPreferredSize(new Dimension(600, 100));
         bottom.add(btnInstall);
-        add("South", bottom);
+        add("Center", bottom);
         
         setVisible(true);
         

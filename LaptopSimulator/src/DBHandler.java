@@ -134,6 +134,28 @@ public class DBHandler {
         return result;
     }
     
+    //get system information
+     public ArrayList<String> getSysInfo(){
+        ArrayList<String> result = new ArrayList<String>();
+        try {
+            ResultSet results = myStatement.executeQuery
+                ("SELECT * FROM system_information");
+//            JOptionPane.showMessageDialog(null, songName, "Error", JOptionPane.ERROR_MESSAGE);
+            if (results.next()) {
+                result.add(results.getString(1));
+                result.add(results.getString(2));
+                result.add(results.getString(3));
+                result.add(results.getString(4));
+                result.add(results.getString(5));
+            }
+            results.close();
+        }
+        catch (SQLException sqle) {
+            out.println(sqle);
+        }
+        return result;
+    }
+    
     //install software
     public boolean installSoftware(String name){
         try {
