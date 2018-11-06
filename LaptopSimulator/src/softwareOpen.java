@@ -40,7 +40,7 @@ public class softwareOpen extends JFrame implements ActionListener{
     //excel button
     Icon excelIcon = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/excel.jpg");
     JButton excelBtn = new JButton(excelIcon);
-	Icon excel = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/excelUI.png");
+    Icon excel = new ImageIcon("D:/_Object Oriented Development/Group Assignment/Images/excelUI.png");
     JLabel lblExcel = new JLabel();
     //String note;
     public static void main(String[] args) {
@@ -76,14 +76,15 @@ public class softwareOpen extends JFrame implements ActionListener{
             
         
         top.setBackground(new Color(143, 170, 220, 100));
-        
+        top.setPreferredSize(new Dimension(350, 150));
         bottom.setBackground(new Color(143, 170, 220, 100));
+        bottom.setPreferredSize(new Dimension(350, 100));
         // position each JPanel in the window frame 
         add("North", top);
         add("South", bottom);
         
         //window properties
-        setSize(350,200);
+        setSize(350,250);
         setTitle("Open Software");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);

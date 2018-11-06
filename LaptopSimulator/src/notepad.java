@@ -13,9 +13,11 @@ public class notepad extends JFrame implements ActionListener{
     JLabel lblCreateNote = new JLabel("Create Note");
     JTextArea txtAreaCN = new JTextArea(5, 30);
     JLabel lblFileName = new JLabel("File Name");
-    JTextField txtFile = new JTextField(5);
+    JTextArea txtFile = new JTextArea();
     JButton btnSubmit = new JButton("Submit and Save");
     ArrayList<String> notePadListArr = new ArrayList<String>();
+    Font font1 = new Font("Segoe UI", Font.BOLD, 22);//font
+    Font font2 = new Font("Times", Font.PLAIN, 20);//font
     
     public static void main(String[] args) {
         //creating object 
@@ -28,6 +30,10 @@ public class notepad extends JFrame implements ActionListener{
         //setting layout and background colour
         top.setLayout(new FlowLayout(FlowLayout.CENTER)); 
         top.setBackground(new Color(143, 100, 220, 100));
+        lblOpenFile.setFont(font1);
+        btnOpen.setFont(font1);
+        comboFile.setFont(font2);
+        btnOpen.setPreferredSize(new Dimension(100, 40));
         //adding elements into the ui
         top.add(lblOpenFile);
         top.add(comboFile);
@@ -45,17 +51,31 @@ public class notepad extends JFrame implements ActionListener{
         middle.setLayout(new FlowLayout(FlowLayout.CENTER));
         middle.setBackground(new Color(143, 110, 220, 200));
         middle.setPreferredSize(new Dimension(10,10));
+        txtAreaCN.setFont(font2);
+        txtFile.setFont(font2);
+        lblFileName.setFont(font1);
+        lblCreateNote.setFont(font1);
+        //set bound and preferred sizefor text area
+        txtAreaCN.setLineWrap(true);
+        txtAreaCN.setWrapStyleWord(true);
+        txtFile.setPreferredSize(new Dimension(400, 30));
+        txtAreaCN.setBounds(0,0, 200, 200);
+        txtAreaCN.setPreferredSize(new Dimension(200, 200));
         //adding elements into the ui
+        JPanel middle1 = new JPanel();
         middle.add(lblFileName);
         middle.add(txtFile);
-        middle.add(lblCreateNote);
-        middle.add(txtAreaCN);
+        middle1.add(lblCreateNote);
+        middle1.add(txtAreaCN);
+        middle.add(middle1);
         
          //creating objects for middle part
         JPanel bottom = new JPanel();
         //setting layout and background colour
         bottom.setBackground(new Color(143, 100, 220, 100));
         bottom.setLayout(new FlowLayout(FlowLayout.CENTER)); 
+        btnSubmit.setFont(font1);
+        btnSubmit.setPreferredSize(new Dimension(350, 40));
         //adding elements into the ui
         bottom.add(btnSubmit);
         
@@ -67,7 +87,7 @@ public class notepad extends JFrame implements ActionListener{
         
         //window properties
         top.setLayout(new FlowLayout());
-        setSize(685,210);
+        setSize(685,400);
         setTitle("Notepad");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
@@ -81,15 +101,21 @@ public class notepad extends JFrame implements ActionListener{
             String note;
             String fileName = txtFile.getText();
             note = txtAreaCN.getText();
-            db.saveFile(fileName, note);
-            //close all windows
-            java.awt.Window win[] = java.awt.Window.getWindows(); 
-                for(int i=0;i<win.length;i++){ 
-                win[i].dispose(); 
-            } 
-            LaptopSimulator ls = new LaptopSimulator(true);
-            ls.notepadTxt.setText(note);
-            ls.notepad();
+            boolean success = db.saveFile(fileName, note);
+            if (success){
+                JOptionPane.showMessageDialog(null, "Note saved successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                //close all windows
+                java.awt.Window win[] = java.awt.Window.getWindows(); 
+                    for(int i=0;i<win.length;i++){ 
+                    win[i].dispose(); 
+                } 
+                LaptopSimulator ls = new LaptopSimulator(true);
+                ls.notepadTxt.setText(note);
+                ls.notepad();
+            }else{
+                JOptionPane.showMessageDialog(null, "File name already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
         }
         else if(e.getSource()==btnOpen){
             String selectedFile = "";

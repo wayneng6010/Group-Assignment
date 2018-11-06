@@ -72,7 +72,7 @@ public void actionPerformed(ActionEvent e){
                             softwareListModel.addElement(softwareListArr.get(i));
                         }
                         list.setModel(softwareListModel);
-                        JOptionPane.showMessageDialog(null, selectedSoftware + " uninstall successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, selectedSoftware + " uninstalled successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
                     }else{
                         JOptionPane.showMessageDialog(null, "Failed to uninstall." + selectedSoftware, "Error", JOptionPane.ERROR_MESSAGE);
                     }

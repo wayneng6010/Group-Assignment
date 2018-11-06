@@ -85,7 +85,7 @@ public void actionPerformed(ActionEvent e){
                 String selectedSoftware = list.getSelectedValue().toString();
                 boolean success = db.installSoftware(selectedSoftware);
                 if (success){
-                    JOptionPane.showMessageDialog(null, selectedSoftware + " has been successfully installed.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, selectedSoftware + " has been successfully installed.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }else{
                     JOptionPane.showMessageDialog(null, selectedSoftware + " already been installed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
