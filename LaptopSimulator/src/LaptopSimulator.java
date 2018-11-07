@@ -439,12 +439,7 @@ public class LaptopSimulator extends JFrame implements ActionListener{
             new Settings();
         }
         if(e.getSource() == notepadBtn){
-//            if(power){
-                new notepad();
-//            }else{
-//                JOptionPane.showMessageDialog(null, "Laptop has not been switched on", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-            
+            new notepad();
         }
         if(e.getSource() == installBtn){
             new InstallSoftware();
