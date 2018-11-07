@@ -99,21 +99,26 @@ public class notepad extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == btnSubmit){
             String note;
-            String fileName = txtFile.getText();
+            String fileName;
+            fileName = txtFile.getText();
             note = txtAreaCN.getText();
-            boolean success = db.saveFile(fileName, note);
-            if (success){
-                JOptionPane.showMessageDialog(null, "Note saved successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-                //close all windows
-                java.awt.Window win[] = java.awt.Window.getWindows(); 
-                    for(int i=0;i<win.length;i++){ 
-                    win[i].dispose(); 
-                } 
-                LaptopSimulator ls = new LaptopSimulator(true);
-                ls.notepadTxt.setText(note);
-                ls.notepad();
+            if(!(fileName.isEmpty()) && !(note.isEmpty())){
+                boolean success = db.saveFile(fileName, note);
+                if (success){
+                    JOptionPane.showMessageDialog(null, "Note saved successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    //close all windows
+                    java.awt.Window win[] = java.awt.Window.getWindows(); 
+                        for(int i=0;i<win.length;i++){ 
+                        win[i].dispose(); 
+                    } 
+                    LaptopSimulator ls = new LaptopSimulator(true);
+                    ls.notepadTxt.setText(note);
+                    ls.notepad();
+                }else{
+                    JOptionPane.showMessageDialog(null, "File name already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }else{
-                JOptionPane.showMessageDialog(null, "File name already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Please fill in the blanks!", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
         }
